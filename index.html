@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shirotify - Android</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Shirotify - Spotify Versi Web Gratis</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -38,7 +37,7 @@
             </div>
             <div>
                 <span class="text-xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">SHIROTIFY</span>
-                <span class="text-[9px] uppercase tracking-widest text-emerald-400 block -mt-1 font-semibold">Berbasis aplikasi android</span>
+                <span class="text-[9px] uppercase tracking-widest text-emerald-400 block -mt-1 font-semibold">Berbasis web</span>
             </div>
         </div>
         <div class="flex items-center gap-4">
@@ -243,6 +242,9 @@
                 } else if(player.src) {
                     player.play(); isPlaying = true; playIcon.className = "fa-solid fa-pause text-2xl";
                     albumArt.classList.remove('animation-paused'); waveContainer.classList.add('wave-active');
+                } else {
+                    // Jika player.src masih kosong (inisialisasi awal di Android), muat lagu pertama saat tombol play ditekan
+                    playSong(songs[currentSongIndex], currentSongIndex);
                 }
             }
 
@@ -264,7 +266,7 @@
             function filterSongs() { renderPlaylist(songs.filter(i => i.title.toLowerCase().includes(searchInput.value.toLowerCase()) || i.artist.toLowerCase().includes(searchInput.value.toLowerCase()))); }
             function formatTime(s) { return `${Math.floor(s / 60).toString().padStart(2, '0')}:${Math.floor(s % 60).toString().padStart(2, '0')}`; }
 
-            // OTOMATIS JALAN TANPA CAPTCHA
+            // MODIFIKASI FIX ANDROID: Hanya muat metadata di awal, tidak memaksa set player.src sebelum interaksi user
             document.addEventListener("DOMContentLoaded", function() {
                 injectMainAppUI();
                 initAppElements();
@@ -273,8 +275,10 @@
                     const s = songs;
                     document.getElementById('title').innerText = s.title;
                     document.getElementById('artist').innerText = s.artist;
-                    albumArt.src = s.cover; player.src = s.url;
-                    updateBG(s.cover); highlightActiveSong();
+                    albumArt.src = s.cover; 
+                    // player.src sengaja dikosongkan agar WebView Android tidak memblokir autoplay ilegal
+                    updateBG(s.cover); 
+                    highlightActiveSong();
                 }
             });
 
